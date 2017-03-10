@@ -28,3 +28,4 @@ Goals:
 - [ ] Sync up to git repository for build
 - [ ] Be able to create new build when new branch is made
 - [ ] Do some stuff with pull requests to test the merge
+- [ ] Be able to create new workspaces for each build

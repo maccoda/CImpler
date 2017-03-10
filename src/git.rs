@@ -5,7 +5,7 @@ use std::process::Command;
 
 // TODO Sort out how can get rustfmt to organize my imports
 
-
+// TODO complete this when things are better
 pub fn git_merge(from_branch: String) {
     let output = Command::new("git").arg("merge").arg(from_branch).output();
     println!("{:?}", output);

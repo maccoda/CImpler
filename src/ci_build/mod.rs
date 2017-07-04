@@ -2,7 +2,6 @@
 //! anything involving the build configuration or build process and execution
 //! within the shell.
 use std::path::Path;
-use std::io;
 
 use serde_yaml;
 
@@ -58,6 +57,14 @@ pub fn exec_before_build(config: BuildConfiguration) -> Result<()> {
     exec_cmd_string(config.before_build)
 }
 
+pub fn exec_build(config: BuildConfiguration) -> Result<()> {
+    exec_cmd_string(config.build)
+}
+
+pub fn exec_after_build(config: BuildConfiguration) -> Result<()> {
+    exec_cmd_string(config.after_build)
+}
+
 fn exec_cmd_string(cmd_string: Option<Vec<CommandString>>) -> Result<()> {
     if let Some(cmds) = cmd_string {
         for cmd in cmds {
@@ -67,7 +74,6 @@ fn exec_cmd_string(cmd_string: Option<Vec<CommandString>>) -> Result<()> {
     } else {
         Err(ErrorKind::CmdFail("Command not present".into()).into())
     }
-    // TODO Should have a different error type here io doesn't make sense
 }
 
 

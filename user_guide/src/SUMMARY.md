@@ -1,3 +1,4 @@
 # Summary
 
-- [Chapter 1](./chapter_1.md)
+- [Quick Start](./quick_start.md)
+- [.cimple.yml Reference](./yml_reference.md)

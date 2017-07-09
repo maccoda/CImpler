@@ -33,3 +33,19 @@ test:nightly:
   script:
     - rustc --version && cargo --version      # Print version info for debugging
     - cargo test --verbose --jobs 1 --release # Don't paralize to make errors more readable
+
+# Upload user guide and docs
+pages:
+  script:
+  - cargo install mdbook
+  - mdbook build -d public user_guide
+  - cargo doc
+  - mv target/doc public/doc
+
+  artifacts:
+    paths:
+    - public
+
+  cache:
+    paths:
+    - $HOME/.cargo

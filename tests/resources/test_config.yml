@@ -1,9 +1,13 @@
-before_build:
-  - ls
+repo_url: git@gitlab.com/maccoda/cimpler.git
+commit: master
+user_build:
+  before_build:
+    - ls
 
-build:
-  - echo "Hello there" > test.txt
-  - cat test.txt
+  build:
+    - touch test.txt
+    - cat test.txt
 
-after_build:
-  - cat test.txt
+  after_build:
+    - echo Let's look at the build file
+    - cat Cargo.toml

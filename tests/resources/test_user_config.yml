@@ -1,0 +1,10 @@
+before_build:
+  - ls
+
+build:
+  - touch test.txt
+  - cat test.txt
+
+after_build:
+  - echo Let's look at the build file
+  - cat Cargo.toml

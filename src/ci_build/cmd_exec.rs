@@ -9,7 +9,7 @@ use ci_build::CommandString;
 /// Takes a full command as a space separated string and constructs a command to
 /// execte, returning the exit status code to simply determine if the command
 /// was succesful.
-pub fn execute(full_cmd: CommandString) -> Result<ExitStatus, io::Error> {
+pub fn execute(full_cmd: &CommandString) -> Result<ExitStatus, io::Error> {
     let mut cmd_with_args = full_cmd.0.split_whitespace();
     let mut exec = cmd_with_args.next().ok_or(io::ErrorKind::Other).map(
         |cmd| {

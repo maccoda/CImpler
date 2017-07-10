@@ -8,27 +8,53 @@ use serde_yaml;
 use file_utils;
 
 use super::{ErrorKind, Result};
+use self::git::{GitCommit, GitUrl};
 
-mod git_cmd;
+pub mod git;
 mod cmd_exec;
 
-
+/// Structure of the build file that will be maintained in the users repository
 #[derive(Serialize, Deserialize, Debug)]
-pub struct BuildConfiguration {
+pub struct UserBuildConfiguration {
     before_build: Option<Vec<CommandString>>,
     build: Option<Vec<CommandString>>,
     after_build: Option<Vec<CommandString>>,
 }
 
-impl BuildConfiguration {
+impl UserBuildConfiguration {
+    /// Construct the build file type from the specified path
     fn from<P: AsRef<Path>>(
         file_name: P,
-    ) -> ::std::result::Result<BuildConfiguration, serde_yaml::Error> {
+    ) -> ::std::result::Result<UserBuildConfiguration, serde_yaml::Error> {
         serde_yaml::from_str(&file_utils::read_from_file(file_name))
         // let raw = RawConfiguration::from(file_name)?;
         // Ok(BuildConfiguration(raw))
     }
 }
+/// Build file composed of the `UserBuildConfiguration` along with some
+/// metadata about the build and repository
+#[derive(Serialize, Deserialize, Debug)]
+pub struct BuildConfiguration {
+    // Added from database
+    repo_url: GitUrl,
+    commit: GitCommit,
+    user_build: UserBuildConfiguration,
+}
+
+impl BuildConfiguration {
+    pub fn new(
+        repo_url: GitUrl,
+        commit: GitCommit,
+        user_build: UserBuildConfiguration,
+    ) -> BuildConfiguration {
+        BuildConfiguration {
+            repo_url,
+            commit,
+            user_build,
+        }
+    }
+}
+
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct CommandString(String);
@@ -47,36 +73,52 @@ impl<'a> From<&'a str> for CommandString {
 
 /// Parse a YAML file to produce the `BuildConfig`. Will return error if the
 /// config does not match the expected format
-pub fn parse_build_file<P: AsRef<Path>>(
+pub fn parse_user_build_file<P: AsRef<Path>>(
     file_name: P,
-) -> ::std::result::Result<BuildConfiguration, serde_yaml::Error> {
-    BuildConfiguration::from(file_name)
+) -> ::std::result::Result<UserBuildConfiguration, serde_yaml::Error> {
+    UserBuildConfiguration::from(file_name)
 }
 
-pub fn exec_before_build(config: BuildConfiguration) -> Result<()> {
-    exec_cmd_string(config.before_build)
+/// Struct that handles the execution of the `BuildConfiguration`
+#[derive(Debug)]
+pub struct CiBuilder {
+    configuration: BuildConfiguration,
 }
 
-pub fn exec_build(config: BuildConfiguration) -> Result<()> {
-    exec_cmd_string(config.build)
-}
+impl CiBuilder {
+    /// Constructs a new builder from the provided configuration
+    pub fn new(configuration: BuildConfiguration) -> CiBuilder {
+        CiBuilder { configuration }
+    }
 
-pub fn exec_after_build(config: BuildConfiguration) -> Result<()> {
-    exec_cmd_string(config.after_build)
-}
-
-fn exec_cmd_string(cmd_string: Option<Vec<CommandString>>) -> Result<()> {
-    if let Some(cmds) = cmd_string {
-        for cmd in cmds {
-            cmd_exec::execute(cmd)?;
-        }
-        Ok(())
-    } else {
-        Err(ErrorKind::CmdFail("Command not present".into()).into())
+    /// Execute the build file
+    pub fn exec_build(self) -> Result<()> {
+        // Start with getting the repository
+        git::clone_and_checkout(self.configuration.repo_url, &self.configuration.commit)?;
+        exec_cmd_string(self.configuration.user_build.before_build)
+            .and(exec_cmd_string(self.configuration.user_build.build))
+            .and(exec_cmd_string(self.configuration.user_build.after_build))
     }
 }
 
-
+fn exec_cmd_string(full_cmd: Option<Vec<CommandString>>) -> Result<()> {
+    if let Some(cmds) = full_cmd {
+        for cmd in cmds {
+            let exit_status = cmd_exec::execute(&cmd)?;
+            if !exit_status.success() {
+                return Err(
+                    ErrorKind::CmdFail(format!(
+                        "Failed with exit code {}",
+                        exit_status.code().unwrap_or(-1)
+                    )).into(),
+                );
+            }
+        }
+        return Ok(());
+    }
+    // Assume that no field is mandatory
+    Ok(())
+}
 
 
 #[cfg(test)]
@@ -84,15 +126,18 @@ mod tests {
     #[test]
     fn test_parse_build_file() {
         use test_utils;
-        let config = super::parse_build_file("tests/resources/test_config.yml").unwrap();
+        let config = super::parse_user_build_file("tests/resources/test_user_config.yml").unwrap();
         test_utils::compare_vec(vec!["ls".into()], config.before_build.unwrap());
         test_utils::compare_vec(
-            vec![
-                "echo \"Hello there\" > test.txt".into(),
-                "cat test.txt".into(),
-            ],
+            vec!["touch test.txt".into(), "cat test.txt".into()],
             config.build.unwrap(),
         );
-        test_utils::compare_vec(vec!["cat test.txt".into()], config.after_build.unwrap());
+        test_utils::compare_vec(
+            vec![
+                "echo Let's look at the build file".into(),
+                "cat Cargo.toml".into(),
+            ],
+            config.after_build.unwrap(),
+        );
     }
 }

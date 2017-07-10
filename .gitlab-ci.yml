@@ -10,7 +10,7 @@
 # You will often need this when you (or any of your dependencies) depends on C code.
 before_script:
   - apt-get update -yqq
-  - apt-get install -yqq pkg-config libssl-dev make
+  - apt-get install -yqq pkg-config libssl-dev make cmake
   - apt-get install -yqq --no-install-recommends build-essential
 
 # Use cargo to test the project
@@ -36,6 +36,7 @@ test:nightly:
 
 # Upload user guide and docs
 pages:
+  image: "scorpil/rust:stable"
   script:
   - cargo install mdbook
   - mdbook build -d public user_guide

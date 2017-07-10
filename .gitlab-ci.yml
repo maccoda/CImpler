@@ -39,6 +39,7 @@ pages:
   image: "scorpil/rust:stable"
   script:
   - cargo install mdbook
+  - export PATH=$(pwd)/bin:$HOME/.cargo/bin:$PATH
   - mdbook build -d public user_guide
   - cargo doc
   - mv target/doc public/doc

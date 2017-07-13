@@ -40,14 +40,14 @@ pages:
   script:
   - cargo install mdbook
   - export PATH=$(pwd)/bin:$HOME/.cargo/bin:$PATH
-  - mdbook build -d public user_guide
+  - mdbook build -d ../public user_guide
   - cargo doc
-  - mv target/doc public/doc
+  - mv target/doc public/
 
   artifacts:
     paths:
     - public
 
-  cache:
-    paths:
+cache:
+  paths:
     - $HOME/.cargo

@@ -32,6 +32,7 @@ error_chain!{
 }
 
 pub fn perform_build() -> Result<()> {
+    println!("Let us perform this build");
     let conf = BuildConfiguration::from("tests/resources/test_config.yml")
         .expect("We have a bad file");
 

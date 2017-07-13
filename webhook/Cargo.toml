@@ -1,8 +1,8 @@
 [package]
-name = "cimpler"
+name = "webhook"
 version = "0.1.0"
 authors = ["Dylan Maccora <maccora17@gmail.com>"]
 
-[workspace]
-members = ["ci_build", "webhook"]
-
+[dependencies]
+rocket = "0.2.9"
+rocket_codegen = "0.2.9"

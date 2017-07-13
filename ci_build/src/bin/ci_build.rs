@@ -1,4 +1,4 @@
-extern crate cimpler;
+extern crate ci_build;
 
 extern crate log;
 
@@ -7,7 +7,7 @@ fn main() {
         max_log_level.set(::log::LogLevelFilter::Debug);
         Box::new(SimpleLogger)
     }).unwrap();
-    cimpler::perform_build().unwrap_or_else(|err| println!("An error has occured! {:?}", err))
+    ci_build::perform_build().unwrap_or_else(|err| println!("An error has occured! {:?}", err))
 }
 
 use log::{LogLevel, LogMetadata, LogRecord};

@@ -11,6 +11,7 @@ variables:
 stages:
   - build
   - coverage
+  - docs
 
 # Optional: Install a C compiler, cmake and git into the container.
 # You will often need this when you (or any of your dependencies) depends on C code.
@@ -29,6 +30,7 @@ test:stable:
 
 # Use cargo to test the project
 test:beta:
+  stage: build
   image: "scorpil/rust:beta"
   script:
     - rustc --version && cargo --version      # Print version info for debugging
@@ -36,6 +38,7 @@ test:beta:
 
 # Use cargo to test the project
 test:nightly:
+  stage: build
   image: "scorpil/rust:nightly"
   script:
     - rustc --version && cargo --version      # Print version info for debugging
@@ -43,6 +46,7 @@ test:nightly:
 
 # Upload user guide and docs
 pages:
+  stage: docs
   image: "scorpil/rust:stable"
   script:
   - cargo install mdbook
@@ -58,18 +62,18 @@ pages:
 code_cov:
   stage: coverage
   script: wget https://github.com/SimonKagstrom/kcov/archive/master.tar.gz &&
-  tar xzf master.tar.gz &&
-  cd kcov-master &&
-  mkdir build &&
-  cd build &&
-  cmake .. &&
-  make &&
-  sudo make install &&
-  cd ../.. &&
-  rm -rf kcov-master &&
-  for file in target/debug/${CRATE}-*[^\.d]; do mkdir -p "target/cov/$(basename $file)"; kcov --exclude-pattern=/.cargo,/usr/lib --verify "target/cov/$(basename $file)" "$file"; done &&
-  bash <(curl -s https://codecov.io/bash) &&
-  echo "Uploaded code coverage"
+      tar xzf master.tar.gz &&
+      cd kcov-master &&
+      mkdir build &&
+      cd build &&
+      cmake .. &&
+      make &&
+      sudo make install &&
+      cd ../.. &&
+      rm -rf kcov-master &&
+      for file in target/debug/${CRATE}-*[^\.d]; do mkdir -p "target/cov/$(basename $file)"; kcov --exclude-pattern=/.cargo,/usr/lib --verify "target/cov/$(basename $file)" "$file"; done &&
+      bash <(curl -s https://codecov.io/bash) &&
+      echo "Uploaded code coverage"
   when: on_success
 
 cache:

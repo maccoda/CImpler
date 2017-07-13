@@ -27,8 +27,6 @@ impl UserBuildConfiguration {
         file_name: P,
     ) -> ::std::result::Result<UserBuildConfiguration, serde_yaml::Error> {
         serde_yaml::from_str(&file_utils::read_from_file(file_name))
-        // let raw = RawConfiguration::from(file_name)?;
-        // Ok(BuildConfiguration(raw))
     }
 }
 /// Build file composed of the `UserBuildConfiguration` along with some
@@ -42,20 +40,15 @@ pub struct BuildConfiguration {
 }
 
 impl BuildConfiguration {
-    pub fn new(
-        repo_url: GitUrl,
-        commit: GitCommit,
-        user_build: UserBuildConfiguration,
-    ) -> BuildConfiguration {
-        BuildConfiguration {
-            repo_url,
-            commit,
-            user_build,
-        }
+    /// Construct the build file type from the specified path
+    fn from<P: AsRef<Path>>(
+        file_name: P,
+    ) -> ::std::result::Result<BuildConfiguration, serde_yaml::Error> {
+        serde_yaml::from_str(&file_utils::read_from_file(file_name))
     }
 }
 
-
+/// Typing of a spaced command string to be provided to a shell.
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct CommandString(String);
 

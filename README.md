@@ -4,6 +4,8 @@ A quick and dirty CI tool built in Rust.
 Then check the irony that this has got a build badge from
 a different CI!
 
+[Documentation](https://maccoda.gitlab.io/cimpler/doc/cimpler/)
+
 ## YAML Build File
 ### File Name
 CImpler will look for `.cimpler.yml`

@@ -8,7 +8,6 @@ fn main() {
         Box::new(SimpleLogger)
     }).unwrap();
     cimpler::perform_build().unwrap_or_else(|err| println!("An error has occured! {:?}", err))
-
 }
 
 use log::{LogLevel, LogMetadata, LogRecord};

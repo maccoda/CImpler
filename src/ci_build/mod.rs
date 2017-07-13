@@ -41,7 +41,7 @@ pub struct BuildConfiguration {
 
 impl BuildConfiguration {
     /// Construct the build file type from the specified path
-    fn from<P: AsRef<Path>>(
+    pub fn from<P: AsRef<Path>>(
         file_name: P,
     ) -> ::std::result::Result<BuildConfiguration, serde_yaml::Error> {
         serde_yaml::from_str(&file_utils::read_from_file(file_name))
@@ -62,14 +62,6 @@ impl<'a> From<&'a str> for CommandString {
     fn from(f: &str) -> CommandString {
         CommandString(f.to_owned())
     }
-}
-
-/// Parse a YAML file to produce the `BuildConfig`. Will return error if the
-/// config does not match the expected format
-pub fn parse_user_build_file<P: AsRef<Path>>(
-    file_name: P,
-) -> ::std::result::Result<UserBuildConfiguration, serde_yaml::Error> {
-    UserBuildConfiguration::from(file_name)
 }
 
 /// Struct that handles the execution of the `BuildConfiguration`
@@ -119,7 +111,8 @@ mod tests {
     #[test]
     fn test_parse_build_file() {
         use test_utils;
-        let config = super::parse_user_build_file("tests/resources/test_user_config.yml").unwrap();
+        let config = super::UserBuildConfiguration::from("tests/resources/test_user_config.yml")
+            .unwrap();
         test_utils::compare_vec(vec!["ls".into()], config.before_build.unwrap());
         test_utils::compare_vec(
             vec!["touch test.txt".into(), "cat test.txt".into()],

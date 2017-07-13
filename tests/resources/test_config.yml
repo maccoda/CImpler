@@ -1,5 +1,5 @@
-repo_url: git@gitlab.com/maccoda/cimpler.git
-commit: master
+repo_url: https://gitlab.com/maccoda/cimpler.git
+commit: e5a6f5cc404037f6cda3fe9f6b42df0f9153370b
 user_build:
   before_build:
     - ls

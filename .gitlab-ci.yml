@@ -20,6 +20,7 @@ before_script:
   - apt-get install -yqq pkg-config libssl-dev make cmake
   - apt-get install -yqq --no-install-recommends build-essential
   - curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly
+  - export PATH=$(pwd)/bin:$HOME/.cargo/bin:$PATH
 
 # NOTE Now that using Rocket can only use nightly
 # Use cargo to test the project

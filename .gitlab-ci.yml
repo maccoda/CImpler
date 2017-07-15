@@ -20,21 +20,22 @@ before_script:
   - apt-get install -yqq pkg-config libssl-dev make cmake
   - apt-get install -yqq --no-install-recommends build-essential
 
+# NOTE Now that using Rocket can only use nightly
 # Use cargo to test the project
-test:stable:
-  stage: build
-  image: "scorpil/rust:stable"
-  script:
-    - rustc --version && cargo --version      # Print version info for debugging
-    - cargo test --all --verbose --jobs 1 --release # Don't paralize to make errors more readable
+# test:stable:
+#   stage: build
+#   image: "scorpil/rust:stable"
+#   script:
+#     - rustc --version && cargo --version      # Print version info for debugging
+#     - cargo test --all --verbose --jobs 1 --release # Don't paralize to make errors more readable
 
-# Use cargo to test the project
-test:beta:
-  stage: build
-  image: "scorpil/rust:beta"
-  script:
-    - rustc --version && cargo --version      # Print version info for debugging
-    - cargo test --all --verbose --jobs 1 --release # Don't paralize to make errors more readable
+# # Use cargo to test the project
+# test:beta:
+#   stage: build
+#   image: "scorpil/rust:beta"
+#   script:
+#     - rustc --version && cargo --version      # Print version info for debugging
+#     - cargo test --all --verbose --jobs 1 --release # Don't paralize to make errors more readable
 
 # Use cargo to test the project
 test:nightly:

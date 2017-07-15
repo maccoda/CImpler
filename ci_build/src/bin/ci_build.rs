@@ -7,7 +7,8 @@ fn main() {
         max_log_level.set(::log::LogLevelFilter::Debug);
         Box::new(SimpleLogger)
     }).unwrap();
-    ci_build::perform_build().unwrap_or_else(|err| println!("An error has occured! {:?}", err))
+    ci_build::perform_build("tests/resources/test_config.yml")
+        .unwrap_or_else(|err| println!("An error has occured! {:?}", err))
 }
 
 use log::{LogLevel, LogMetadata, LogRecord};

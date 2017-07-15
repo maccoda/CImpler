@@ -7,16 +7,18 @@ use url;
 pub struct GitUrl(String);
 
 impl GitUrl {
+    /// Returns the file path for where the git repository should be cloned into
     fn path(&self) -> String {
-        let mut full = url::Url::parse(&self.0)
-            .map(|x| x.path().to_owned())
-            .expect("Invalid git URL");
-        full.remove(0);
-        full
+        let mut last = self.0
+            .split("/")
+            .last()
+            .expect("Invalid git URL")
+            .to_owned();
+        let length = last.len();
+        last.split_off(length - ".git".len());
+        last
     }
 }
-// TODO just thinking that we should probably just use URL to ensure the URL is
-// correct form
 
 /// Representation of a git commit. This can either map to a commit hash or a
 /// tag.
@@ -34,9 +36,21 @@ pub struct GitCommit(String);
 /// Initialize the repository by cloning from the provided URL and moving the
 /// head to the specified commit or tag.
 pub fn clone_and_checkout(url: GitUrl, commit: &GitCommit) -> Result<(), ::git2::Error> {
-    // TODO Need to determine a good way for the cloned directory name
     let cloned_dir = url.path();
+    println!("Cloning into {:?}", cloned_dir);
     let repo = Repository::clone(&url.0, cloned_dir)?;
     repo.set_head_detached(::git2::Oid::from_str(&commit.0)?)?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::GitUrl;
+    #[test]
+    fn test_path() {
+        let git = GitUrl("https://gitlab.com/maccoda/cimpler.git".to_owned());
+        assert_eq!("cimpler", git.path());
+        let git = GitUrl("../maccoda/cimpler.git".to_owned());
+        assert_eq!("cimpler", git.path());
+    }
 }

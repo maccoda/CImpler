@@ -8,10 +8,8 @@ extern crate error_chain;
 extern crate git2;
 extern crate url;
 
-mod ci_build;
-mod file_utils;
-#[cfg(test)]
-mod test_utils;
+
+use std::path::Path;
 
 use ci_build::BuildConfiguration;
 
@@ -31,10 +29,14 @@ error_chain!{
     }
 }
 
-pub fn perform_build() -> Result<()> {
-    println!("Let us perform this build");
-    let conf = BuildConfiguration::from("tests/resources/test_config.yml")
-        .expect("We have a bad file");
+mod ci_build;
+mod file_utils;
+#[cfg(test)]
+mod test_utils;
+
+/// Performs the build as specified by the build file provided.
+pub fn perform_build<P: AsRef<Path>>(build_file: P) -> Result<()> {
+    let conf = BuildConfiguration::from(build_file).expect("We have a bad file");
 
     let builder = ci_build::CiBuilder::new(conf);
     builder.exec_build()

@@ -5,6 +5,7 @@ Then check the irony that this has got a build badge from
 a different CI!
 
 [Documentation](https://maccoda.gitlab.io/cimpler/doc/cimpler/)
+[User Guide](https://maccoda.gitlab.io/cimpler)
 
 ## YAML Build File
 ### File Name

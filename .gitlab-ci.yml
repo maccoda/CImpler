@@ -19,6 +19,7 @@ before_script:
   - apt-get update -yqq
   - apt-get install -yqq pkg-config libssl-dev make cmake
   - apt-get install -yqq --no-install-recommends build-essential
+  - curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain nightly
 
 # NOTE Now that using Rocket can only use nightly
 # Use cargo to test the project
@@ -40,7 +41,7 @@ before_script:
 # Use cargo to test the project
 test:nightly:
   stage: build
-  image: "scorpil/rust:nightly"
+  # image: "scorpil/rust:nightly"
   script:
     - rustc --version && cargo --version      # Print version info for debugging
     - cargo test --all --verbose --jobs 1 --release # Don't paralize to make errors more readable
@@ -48,7 +49,7 @@ test:nightly:
 # Upload user guide and docs
 pages:
   stage: docs
-  image: "scorpil/rust:stable"
+  # image: "scorpil/rust:stable"
   script:
   - cargo install mdbook
   - export PATH=$(pwd)/bin:$HOME/.cargo/bin:$PATH

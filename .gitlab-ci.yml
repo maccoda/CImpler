@@ -19,7 +19,6 @@ before_script:
   - apt-get update -yqq
   - apt-get install -yqq pkg-config libssl-dev make cmake
   - apt-get install -yqq --no-install-recommends build-essential
-  - rustup update
 
 # NOTE Now that using Rocket can only use nightly
 # Use cargo to test the project
